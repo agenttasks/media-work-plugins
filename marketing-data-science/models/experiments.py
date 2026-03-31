@@ -4,11 +4,14 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import StrEnum
+from typing import Annotated
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, model_validator
 
-from .base import Platform
+from .base import NonNegativeInt, Platform
+
+MIN_SAMPLE_VIEWS = 200
 
 
 class ExperimentStatus(StrEnum):
@@ -39,35 +42,36 @@ class PlatformMetrics(BaseModel):
     """Metrics collected from a single platform for one variant."""
 
     platform: Platform
-    views: int = Field(ge=0)
-    completions: int = Field(ge=0)
-    likes: int = Field(ge=0)
-    comments: int = Field(ge=0)
-    shares: int = Field(ge=0)
-    new_followers: int = Field(ge=0)
-    link_clicks: int = Field(ge=0)
+    views: NonNegativeInt
+    completions: NonNegativeInt
+    likes: NonNegativeInt
+    comments: NonNegativeInt
+    shares: NonNegativeInt
+    new_followers: NonNegativeInt
+    link_clicks: NonNegativeInt
+
+    def _rate(self, numerator: int) -> float:
+        return numerator / self.views if self.views > 0 else 0.0
 
     @property
     def completion_rate(self) -> float:
-        return self.completions / self.views if self.views > 0 else 0.0
+        return self._rate(self.completions)
 
     @property
     def engagement_rate(self) -> float:
-        if self.views == 0:
-            return 0.0
-        return (self.likes + self.comments + self.shares) / self.views
+        return self._rate(self.likes + self.comments + self.shares)
 
     @property
     def share_rate(self) -> float:
-        return self.shares / self.views if self.views > 0 else 0.0
+        return self._rate(self.shares)
 
     @property
     def follower_conversion(self) -> float:
-        return self.new_followers / self.views if self.views > 0 else 0.0
+        return self._rate(self.new_followers)
 
     @property
     def ctr(self) -> float:
-        return self.link_clicks / self.views if self.views > 0 else 0.0
+        return self._rate(self.link_clicks)
 
     @property
     def composite_score(self) -> float:
@@ -79,6 +83,9 @@ class PlatformMetrics(BaseModel):
             + self.follower_conversion * 0.15
             + self.ctr * 0.10
         )
+
+
+ConfidenceLevel = Annotated[float, Field(ge=0.0, le=1.0)]
 
 
 class VariantResults(BaseModel):
@@ -100,13 +107,11 @@ class VariantResults(BaseModel):
 class StatisticalResult(BaseModel):
     """Statistical comparison between two variants."""
 
-    p_value: float = Field(ge=0.0, le=1.0)
-    effect_size: float = Field(description="Cohen's h")
-    significant: bool = Field(description="p < 0.05")
-    confidence_level: float = Field(default=0.95)
-    winner: str | None = Field(
-        default=None, description="Label of winning variant, or None if inconclusive"
-    )
+    p_value: ConfidenceLevel
+    effect_size: float
+    significant: bool
+    confidence_level: ConfidenceLevel = 0.95
+    winner: str | None = None
 
 
 class ExperimentResults(BaseModel):
@@ -121,18 +126,12 @@ class ExperimentResults(BaseModel):
 
     @model_validator(mode="after")
     def validate_minimum_sample(self) -> ExperimentResults:
-        """Warn if sample size is below minimum for statistical significance."""
-        min_views = 200
-        if self.variant_a_results.total_views < min_views:
-            raise ValueError(
-                f"Variant A has only {self.variant_a_results.total_views} views; "
-                f"minimum {min_views} required for significance"
-            )
-        if self.variant_b_results.total_views < min_views:
-            raise ValueError(
-                f"Variant B has only {self.variant_b_results.total_views} views; "
-                f"minimum {min_views} required for significance"
-            )
+        for label, variant in [("A", self.variant_a_results), ("B", self.variant_b_results)]:
+            if variant.total_views < MIN_SAMPLE_VIEWS:
+                raise ValueError(
+                    f"Variant {label} has only {variant.total_views} views; "
+                    f"minimum {MIN_SAMPLE_VIEWS} required for significance"
+                )
         return self
 
 
@@ -140,14 +139,14 @@ class Experiment(BaseModel):
     """A single A/B experiment with weekly cadence."""
 
     experiment_id: UUID = Field(default_factory=uuid4)
-    week_number: int = Field(ge=1, le=53, description="ISO week number")
+    week_number: int = Field(ge=1, le=53)
     week_start: date
     hypothesis: str = Field(min_length=10)
     variable: ExperimentVariable
-    variant_a: VariantConfig = Field(description="Control variant")
-    variant_b: VariantConfig = Field(description="Treatment variant")
+    variant_a: VariantConfig
+    variant_b: VariantConfig
     platforms: list[Platform] = Field(min_length=1)
-    status: ExperimentStatus = Field(default=ExperimentStatus.PLANNED)
+    status: ExperimentStatus = ExperimentStatus.PLANNED
     results: ExperimentResults | None = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 

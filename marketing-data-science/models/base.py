@@ -4,14 +4,12 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import BaseModel, Field, field_validator
 
 
 class Platform(StrEnum):
-    """Supported social media platforms."""
-
     INSTAGRAM = "instagram"
     TIKTOK = "tiktok"
     YOUTUBE = "youtube"
@@ -24,16 +22,16 @@ class LogLevel(StrEnum):
     ERROR = "error"
 
 
+NonNegativeFloat = Annotated[float, Field(ge=0.0)]
+NonNegativeInt = Annotated[int, Field(ge=0)]
+
+
 class DeviceSurface(BaseModel):
     """Detected device capabilities at session start."""
 
-    available_mcp_servers: list[str] = Field(default_factory=list)
-    local_tools: list[str] = Field(
-        default_factory=list, description="e.g. ffmpeg, imagemagick"
-    )
-    configured_api_keys: list[str] = Field(
-        default_factory=list, description="Names of configured env vars (not values)"
-    )
+    available_mcp_servers: list[str] = []
+    local_tools: list[str] = []
+    configured_api_keys: list[str] = []
     platform_engineering_available: bool = False
 
 
@@ -42,13 +40,11 @@ class TelemetryEvent(BaseModel):
 
     session_id: str
     skill_name: str
-    event_type: str = Field(
-        description="content_generated | experiment_measured | quality_check | requirement_created"
-    )
+    event_type: str
     platform: Platform | None = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    cost_usd: float = Field(default=0.0, ge=0.0)
-    tokens_used: int = Field(default=0, ge=0)
+    cost_usd: NonNegativeFloat = 0.0
+    tokens_used: NonNegativeInt = 0
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -60,13 +56,13 @@ class BaseSessionContext(BaseModel):
     telemetry, logging, device surface, and lifecycle touch points.
     """
 
-    session_id: str = Field(description="Claude Code session ID")
+    session_id: str
     started_at: datetime = Field(default_factory=datetime.utcnow)
     device_surface: DeviceSurface = Field(default_factory=DeviceSurface)
-    total_cost_usd: float = Field(default=0.0, ge=0.0)
-    total_tokens_used: int = Field(default=0, ge=0)
+    total_cost_usd: NonNegativeFloat = 0.0
+    total_tokens_used: NonNegativeInt = 0
     telemetry_events: list[TelemetryEvent] = Field(default_factory=list)
-    log_level: LogLevel = Field(default=LogLevel.INFO)
+    log_level: LogLevel = LogLevel.INFO
 
     def emit_telemetry(self, skill_name: str, event_type: str, **kwargs: Any) -> TelemetryEvent:
         """Create and record a telemetry event."""

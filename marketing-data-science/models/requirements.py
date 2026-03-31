@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Any
+from typing import Annotated, Any, Literal
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -35,16 +35,21 @@ class Priority(StrEnum):
     P2 = "P2"
 
 
+Duration = Annotated[int, Field(ge=15, le=90)]
+Visibility = Literal["public", "private", "unlisted"]
+MaxHashtags = Annotated[list[str], Field(max_length=30)]
+
+
 class ContentSpec(BaseModel):
     """Content specification for video generation."""
 
     platform: Platform
-    duration_seconds: int = Field(ge=15, le=90)
-    aspect_ratio: str = Field(default="9:16")
-    resolution: str = Field(default="1080x1920")
+    duration_seconds: Duration
+    aspect_ratio: str = "9:16"
+    resolution: str = "1080x1920"
     script: str = Field(min_length=1)
     visual_style: str = ""
-    audio: str = Field(default="voiceover", description="voiceover | trending_sound | original")
+    audio: Literal["voiceover", "trending_sound", "original"] = "voiceover"
 
     @field_validator("resolution")
     @classmethod
@@ -61,14 +66,12 @@ class ContentSpec(BaseModel):
 class VideoGenerationSpec(BaseModel):
     """Higgsfield video generation parameters."""
 
-    provider: str = Field(default="higgsfield")
-    style: str = Field(description="e.g. talking_avatar, screen_recording, text_overlay")
+    provider: str = "higgsfield"
+    style: str
     avatar_id: str | None = None
     lip_sync: bool = False
-    camera_controls: str | None = Field(
-        default=None, description="e.g. zoom_in, pan_left, static"
-    )
-    upscale: bool = Field(default=False, description="Upscale output via Higgsfield")
+    camera_controls: str | None = None
+    upscale: bool = False
     additional_params: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -78,24 +81,9 @@ class UploadSpec(BaseModel):
     platform: Platform
     title: str = Field(min_length=1, max_length=200)
     description: str = Field(max_length=5000)
-    hashtags: list[str] = Field(default_factory=list)
+    hashtags: MaxHashtags = []
     scheduled_time: datetime | None = None
-    visibility: str = Field(default="public")
-
-    @field_validator("visibility")
-    @classmethod
-    def validate_visibility(cls, v: str) -> str:
-        allowed = {"public", "private", "unlisted"}
-        if v not in allowed:
-            raise ValueError(f"visibility must be one of {allowed}")
-        return v
-
-    @field_validator("hashtags")
-    @classmethod
-    def validate_hashtag_count(cls, v: list[str]) -> list[str]:
-        if len(v) > 30:
-            raise ValueError("Maximum 30 hashtags allowed (Instagram limit)")
-        return v
+    visibility: Visibility = "public"
 
 
 class ExperimentTracking(BaseModel):
@@ -114,10 +102,10 @@ class Requirement(BaseModel):
     """
 
     requirement_id: UUID = Field(default_factory=uuid4)
-    source_skill: str = Field(description="Originating skill name")
+    source_skill: str
     priority: Priority
     type: RequirementType
-    status: RequirementStatus = Field(default=RequirementStatus.PENDING)
+    status: RequirementStatus = RequirementStatus.PENDING
 
     content_spec: ContentSpec | None = None
     video_generation: VideoGenerationSpec | None = None
