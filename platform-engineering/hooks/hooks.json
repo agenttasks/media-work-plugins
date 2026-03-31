@@ -1,0 +1,34 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"event\": \"session_start\", \"plugin\": \"platform-engineering\", \"timestamp\": \"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\"}'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write(requirements/accepted/*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Requirement accepted - processing started'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write(requirements/completed/*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Requirement completed - marketing-data-science notified'"
+          }
+        ]
+      }
+    ]
+  }
+}

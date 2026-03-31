@@ -1,0 +1,34 @@
+{
+  "name": "media-work-plugins",
+  "owner": {
+    "name": "agenttasks",
+    "email": "agenttasks@github.com"
+  },
+  "metadata": {
+    "description": "AI-powered media content creation plugins for Claude Code - marketing data science and platform engineering for social media content pipelines",
+    "version": "0.1.0",
+    "pluginRoot": "./"
+  },
+  "plugins": [
+    {
+      "name": "marketing-data-science",
+      "source": "./marketing-data-science",
+      "description": "Content strategy and data science for Instagram, TikTok, and YouTube Shorts based on Anthropic CHANGELOG updates",
+      "version": "0.1.0",
+      "author": { "name": "agenttasks" },
+      "category": "marketing",
+      "tags": ["content-strategy", "social-media", "data-science", "shorts", "changelog", "ab-testing"],
+      "strict": false
+    },
+    {
+      "name": "platform-engineering",
+      "source": "./platform-engineering",
+      "description": "Platform integration for Higgsfield AI video generation and social media content upload pipelines (TikTok, Instagram, YouTube)",
+      "version": "0.1.0",
+      "author": { "name": "agenttasks" },
+      "category": "engineering",
+      "tags": ["higgsfield", "video-generation", "tiktok", "instagram", "youtube", "platform"],
+      "strict": false
+    }
+  ]
+}

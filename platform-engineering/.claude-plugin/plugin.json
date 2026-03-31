@@ -1,0 +1,19 @@
+{
+  "name": "platform-engineering",
+  "version": "0.1.0",
+  "description": "Platform integration plugin for Higgsfield AI video generation and social media content upload pipelines. Manages MCP connections, TikTok/Instagram/YouTube uploads, and cross-plugin requirements.",
+  "author": {
+    "name": "agenttasks"
+  },
+  "repository": "https://github.com/agenttasks/media-work-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "platform-engineering",
+    "higgsfield",
+    "video-generation",
+    "tiktok",
+    "instagram",
+    "youtube",
+    "mcp"
+  ]
+}

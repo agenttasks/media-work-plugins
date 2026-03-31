@@ -1,0 +1,14 @@
+[project]
+name = "marketing-data-science"
+version = "0.1.0"
+description = "Pydantic models for marketing data science content pipeline"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0,<3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
