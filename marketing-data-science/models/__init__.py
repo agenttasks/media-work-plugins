@@ -5,26 +5,26 @@ Uses structured inputs, inheritance, structured outputs, and data quality checks
 for the entire content pipeline from CHANGELOG extraction to social media publishing.
 """
 
-from marketing_data_science.models.base import (
+from .base import (
     BaseSessionContext,
     Platform,
     TelemetryEvent,
 )
-from marketing_data_science.models.content import (
+from .content import (
     ChangelogEntry,
     ContentBrief,
     ContentCalendar,
     PlatformAdaptation,
     ScriptFramework,
 )
-from marketing_data_science.models.experiments import (
+from .experiments import (
     Experiment,
     ExperimentResults,
     ExperimentStatus,
     VariantConfig,
     WeeklyReport,
 )
-from marketing_data_science.models.requirements import (
+from .requirements import (
     ContentSpec,
     Requirement,
     RequirementStatus,
