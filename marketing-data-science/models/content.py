@@ -3,19 +3,19 @@
 from __future__ import annotations
 
 from datetime import date, datetime, time
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
-class ImpactLevel(str, Enum):
+class ImpactLevel(StrEnum):
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
 
 
-class ContentPillar(str, Enum):
+class ContentPillar(StrEnum):
     FEATURE_DROPS = "feature_drops"
     TIPS_AND_TRICKS = "tips_and_tricks"
     BEFORE_AFTER = "before_after"

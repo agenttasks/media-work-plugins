@@ -3,22 +3,22 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from .base import Platform
 
 
-class ExperimentStatus(str, Enum):
+class ExperimentStatus(StrEnum):
     PLANNED = "planned"
     RUNNING = "running"
     COMPLETED = "completed"
     ARCHIVED = "archived"
 
 
-class ExperimentVariable(str, Enum):
+class ExperimentVariable(StrEnum):
     HOOK_TYPE = "hook_type"
     DURATION = "duration"
     STYLE = "style"

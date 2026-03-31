@@ -1,0 +1,21 @@
+{
+  "name": "media-operations",
+  "version": "0.1.0",
+  "description": "Media operations orchestration plugin leveraging Claude Code's dispatch, channels, cowork, remote control, Slack, and scheduled task capabilities for autonomous content pipeline management.",
+  "author": {
+    "name": "agenttasks"
+  },
+  "repository": "https://github.com/agenttasks/media-work-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "media-operations",
+    "dispatch",
+    "channels",
+    "cowork",
+    "remote-control",
+    "slack",
+    "scheduled-tasks",
+    "agent-teams",
+    "orchestration"
+  ]
+}

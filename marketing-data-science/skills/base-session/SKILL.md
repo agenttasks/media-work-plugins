@@ -4,7 +4,8 @@ description: |
   Base skill providing canonical Claude Code session context for marketing-data-science tasks.
   Inherits session metadata, costs, telemetry, logging, and device surface information.
   All other marketing-data-science skills extend this base context.
-user-invocable: false
+metadata:
+  user-invocable: "false"
 ---
 
 # Base Session Context

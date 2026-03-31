@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from .base import Platform
 
 
-class RequirementStatus(str, Enum):
+class RequirementStatus(StrEnum):
     PENDING = "pending"
     ACCEPTED = "accepted"
     IN_PROGRESS = "in_progress"
@@ -22,14 +22,14 @@ class RequirementStatus(str, Enum):
     REJECTED = "rejected"
 
 
-class RequirementType(str, Enum):
+class RequirementType(StrEnum):
     VIDEO_GENERATION = "video_generation"
     CONTENT_UPLOAD = "content_upload"
     INTEGRATION_SETUP = "integration_setup"
     MEASUREMENT_PIPELINE = "measurement_pipeline"
 
 
-class Priority(str, Enum):
+class Priority(StrEnum):
     P0 = "P0"
     P1 = "P1"
     P2 = "P2"
@@ -53,8 +53,8 @@ class ContentSpec(BaseModel):
             w, h = v.split("x")
             int(w)
             int(h)
-        except (ValueError, AttributeError):
-            raise ValueError(f"Resolution must be WxH format: {v}")
+        except (ValueError, AttributeError) as err:
+            raise ValueError(f"Resolution must be WxH format: {v}") from err
         return v
 
 
@@ -134,14 +134,14 @@ class Requirement(BaseModel):
     @model_validator(mode="after")
     def validate_spec_for_type(self) -> Requirement:
         """Ensure the right specs are provided for the requirement type."""
-        if self.type == RequirementType.VIDEO_GENERATION:
-            if self.content_spec is None or self.video_generation is None:
-                raise ValueError(
-                    "VIDEO_GENERATION requirements need content_spec and video_generation"
-                )
-        if self.type == RequirementType.CONTENT_UPLOAD:
-            if self.upload_spec is None:
-                raise ValueError("CONTENT_UPLOAD requirements need upload_spec")
+        if self.type == RequirementType.VIDEO_GENERATION and (
+            self.content_spec is None or self.video_generation is None
+        ):
+            raise ValueError(
+                "VIDEO_GENERATION requirements need content_spec and video_generation"
+            )
+        if self.type == RequirementType.CONTENT_UPLOAD and self.upload_spec is None:
+            raise ValueError("CONTENT_UPLOAD requirements need upload_spec")
         return self
 
     @model_validator(mode="after")

@@ -5,7 +5,7 @@
     "email": "agenttasks@github.com"
   },
   "metadata": {
-    "description": "AI-powered media content creation plugins for Claude Code - marketing data science and platform engineering for social media content pipelines",
+    "description": "AI-powered media content creation plugins for Claude Code - marketing data science, platform engineering, and media operations for social media content pipelines",
     "version": "0.1.0",
     "pluginRoot": "./"
   },
@@ -28,6 +28,16 @@
       "author": { "name": "agenttasks" },
       "category": "engineering",
       "tags": ["higgsfield", "video-generation", "tiktok", "instagram", "youtube", "platform"],
+      "strict": false
+    },
+    {
+      "name": "media-operations",
+      "source": "./media-operations",
+      "description": "Media operations orchestration using Claude Code dispatch, channels, cowork, remote control, Slack, scheduled tasks, and agent teams for autonomous content pipeline management",
+      "version": "0.1.0",
+      "author": { "name": "agenttasks" },
+      "category": "operations",
+      "tags": ["dispatch", "channels", "cowork", "remote-control", "slack", "scheduled-tasks", "agent-teams", "orchestration"],
       "strict": false
     }
   ]

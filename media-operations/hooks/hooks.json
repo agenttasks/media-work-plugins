@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"event\": \"session_start\", \"plugin\": \"media-operations\", \"timestamp\": \"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\"}'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write(requirements/pending/*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"event\": \"requirement_dispatched\", \"plugin\": \"media-operations\", \"action\": \"dispatch_to_agent_team\"}'"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"event\": \"subagent_started\", \"plugin\": \"media-operations\"}'"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"event\": \"subagent_stopped\", \"plugin\": \"media-operations\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}

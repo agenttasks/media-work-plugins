@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
-from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class Platform(str, Enum):
+class Platform(StrEnum):
     """Supported social media platforms."""
 
     INSTAGRAM = "instagram"
@@ -18,7 +17,7 @@ class Platform(str, Enum):
     YOUTUBE = "youtube"
 
 
-class LogLevel(str, Enum):
+class LogLevel(StrEnum):
     DEBUG = "debug"
     INFO = "info"
     WARN = "warn"
