@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"event\": \"session_start\", \"plugin\": \"marketing-data-science\", \"timestamp\": \"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'\"}'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write(requirements/pending/*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Requirement created - platform-engineering notified'"
+          }
+        ]
+      }
+    ]
+  }
+}
